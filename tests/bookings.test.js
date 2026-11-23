@@ -89,6 +89,16 @@ describe('POST /bookings', () => {
     expect(store.users.get('u2').credits).toBe(1);
   });
 
+  test('402 (not VENUE_FULL) when user has no credits and venue is full', async () => {
+    store.users.set('u3', { id: 'u3', name: 'Cara', credits: 5 });
+    await book('u1', 'v1');
+    await book('u3', 'v1'); // v1 now full
+
+    const res = await book('u2', 'v1'); // u2 has 0 credits
+    expect(res.status).toBe(402);
+    expect(res.body.error.code).toBe('INSUFFICIENT_CREDITS');
+  });
+
   test('expired bookings free capacity and allow rebooking; credit is not refunded', async () => {
     store.users.set('u3', { id: 'u3', name: 'Cara', credits: 5 });
     await book('u1', 'v1');

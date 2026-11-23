@@ -76,18 +76,20 @@ function createBooking(userId, venueId) {
     );
   }
 
-  // Expired bookings free up their spot; active and redeemed ones hold it.
-  const used = todaysVenueBookings.filter((b) => statusOf(b, now) !== STATUS.EXPIRED).length;
-  if (used >= venue.dailyCapacity) {
-    throw new AppError(409, 'VENUE_FULL', `${venue.name} is fully booked for today. Please try another venue.`);
-  }
-
+  // Credits are checked before capacity so a user with no credits is told
+  // about their credits, not that the venue is full.
   if (user.credits < 1) {
     throw new AppError(
       402,
       'INSUFFICIENT_CREDITS',
       `You don't have any visit credits left. Top up your credits to book ${venue.name}.`,
     );
+  }
+
+  // Expired bookings free up their spot; active and redeemed ones hold it.
+  const used = todaysVenueBookings.filter((b) => statusOf(b, now) !== STATUS.EXPIRED).length;
+  if (used >= venue.dailyCapacity) {
+    throw new AppError(409, 'VENUE_FULL', `${venue.name} is fully booked for today. Please try another venue.`);
   }
 
   user.credits -= 1;

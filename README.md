@@ -68,7 +68,7 @@ Every error looks like this: `{ "error": { "code": "...", "message": "..." } }`
 | 409 | `ALREADY_REDEEMED` | Code already used |
 | 410 | `CODE_EXPIRED` | Code past `expiresAt` |
 
-Booking checks run in this order: user, venue, duplicate, capacity, credits. A rejected booking never deducts a credit.
+Booking checks run in this order: user, venue, duplicate, credits, capacity. A rejected booking never deducts a credit.
 
 ## Testing expiry
 - **Automated:** tests move a fake clock (`src/clock.js`) past `expiresAt`, so nothing actually waits.
